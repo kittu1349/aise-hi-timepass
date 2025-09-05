@@ -31,7 +31,13 @@ export async function POST(req: NextRequest) {
     if (!date || !foodItemId || typeof quantity !== 'number') {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
     }
-    const food = await prisma.foodItem.findFirst({ where: { id: foodItemId, userId } })
+    if (!foodItemId || !userId) {
+      return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
+    }
+
+    const food = await prisma.foodItem.findFirst({
+      where: { id: foodItemId, userId }
+    })
     if (!food) return NextResponse.json({ error: 'Food not found' }, { status: 404 })
     const totalCalories = (food.caloriesPer100g * quantity) / 100
     const created = await prisma.foodEntry.create({
