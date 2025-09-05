@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
     if (!date || !workoutTypeId || typeof duration !== 'number') {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
     }
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const type = await prisma.workoutType.findFirst({ where: { id: workoutTypeId, userId } })
     if (!type) return NextResponse.json({ error: 'Workout type not found' }, { status: 404 })
 

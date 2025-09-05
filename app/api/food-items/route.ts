@@ -6,6 +6,7 @@ export async function GET(req: NextRequest) {
   try {
     const { userId } = getOrCreateUserId(true)
     const search = req.nextUrl.searchParams.get('q')?.trim() || ''
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const items = await prisma.foodItem.findMany({
       where: {
         userId,
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
     if (!name || typeof caloriesPer100g !== 'number') {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
     }
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const created = await prisma.foodItem.create({
       data: { name, caloriesPer100g, protein, carbs, fat, fiber, sugar, sodium, userId },
     })
