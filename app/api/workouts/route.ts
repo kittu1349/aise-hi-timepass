@@ -5,8 +5,9 @@ import { getOrCreateUserId } from '@/lib/user'
 export async function GET(req: NextRequest) {
   try {
     const { userId } = getOrCreateUserId()
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const date = req.nextUrl.searchParams.get('date')
-    const where: any = { userId }
+    const where: any = { userId: userId as string }
     if (date) {
       const start = new Date(date)
       const end = new Date(date)
@@ -26,7 +27,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, setCookie } = getOrCreateUserId()
+    const { userId, setCookie } = getOrCreateUserId(false)
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { date, workoutTypeId, duration, caloriesBurned, intensity, notes } = await req.json()
     if (!date || !workoutTypeId || typeof duration !== 'number') {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
@@ -47,7 +49,7 @@ export async function POST(req: NextRequest) {
       include: { workoutType: true }
     })
     const res = NextResponse.json(created, { status: 201 })
-    if (setCookie) res.cookies.set('uid', userId, { httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 365 })
+    if (setCookie && userId) res.cookies.set('uid', userId, { httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 365 })
     return res
   } catch (e) {
     return NextResponse.json({ error: 'Failed to create workout' }, { status: 500 })
