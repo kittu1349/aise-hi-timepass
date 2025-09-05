@@ -6,6 +6,7 @@ export async function GET(req: NextRequest) {
   try {
     const { userId } = getOrCreateUserId()
     const search = req.nextUrl.searchParams.get('q')?.trim() || ''
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const types = await prisma.workoutType.findMany({
       where: {
         userId,
@@ -22,7 +23,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, setCookie } = getOrCreateUserId()
+    const { userId, setCookie } = getOrCreateUserId(false)
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const body = await req.json()
     const { name, category, caloriesPerMin, description } = body
     if (!name || !category || typeof caloriesPerMin !== 'number') {
