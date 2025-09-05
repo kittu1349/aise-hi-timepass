@@ -4,7 +4,8 @@ import { getOrCreateUserId } from '@/lib/user'
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { userId } = getOrCreateUserId()
+    const { userId } = getOrCreateUserId(false)
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const item = await prisma.foodItem.findFirst({ where: { id: params.id, userId } })
     if (!item) return NextResponse.json({ error: 'Not found' }, { status: 404 })
     return NextResponse.json(item)
@@ -15,7 +16,8 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { userId } = getOrCreateUserId()
+    const { userId } = getOrCreateUserId(false)
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const data = await req.json()
     const updated = await prisma.foodItem.update({ where: { id: params.id, userId }, data })
     return NextResponse.json(updated)
@@ -26,7 +28,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { userId } = getOrCreateUserId()
+    const { userId } = getOrCreateUserId(false)
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     await prisma.foodItem.delete({ where: { id: params.id, userId } })
     return NextResponse.json({ ok: true })
   } catch (e) {
