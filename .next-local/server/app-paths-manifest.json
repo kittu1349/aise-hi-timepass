@@ -1,15 +1,4 @@
 {
   "/not-found": "app/not-found.js",
-  "/page": "app/page.js",
-  "/api/profile/route": "app/api/profile/route.js",
-  "/calculator/page": "app/calculator/page.js",
-  "/profile/page": "app/profile/page.js",
-  "/auth/register/page": "app/auth/register/page.js",
-  "/nutrition/page": "app/nutrition/page.js",
-  "/workouts/page": "app/workouts/page.js",
-  "/api/workouts/route": "app/api/workouts/route.js",
-  "/api/food-entries/route": "app/api/food-entries/route.js",
-  "/auth/login/page": "app/auth/login/page.js",
-  "/api/auth/login/route": "app/api/auth/login/route.js",
-  "/analytics/page": "app/analytics/page.js"
+  "/page": "app/page.js"
 }
