@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  passwordHash String?
+
+  // Profile information
+  age              Int?
+  gender           Gender?
+  height           Float? // cm
+  weight           Float? // kg
+  activityLevel    ActivityLevel?
+  goalWeight       Float? // kg
+  deficitSpeed     DeficitSpeed?
+  targetCalories   Float?
+  bmr              Float?
+  tdee             Float?
+
+  // Relations
+  foodItems    FoodItem[]
+  foodEntries  FoodEntry[]
+  workoutTypes WorkoutType[]
+  workouts     Workout[]
+
+  @@map("users")
+}
+
+model FoodItem {
+  id             String  @id @default(cuid())
+  name           String
+  caloriesPer100g Float
+  protein        Float   @default(0)
+  carbs          Float   @default(0)
+  fat            Float   @default(0)
+  fiber          Float   @default(0)
+  sugar          Float   @default(0)
+  sodium         Float   @default(0) // mg
+  
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  foodEntries FoodEntry[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("food_items")
+}
+
+model FoodEntry {
+  id           String   @id @default(cuid())
+  date         DateTime
+  quantity     Float    // grams
+  totalCalories Float
+  
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  foodItemId String
+  foodItem   FoodItem  @relation(fields: [foodItemId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("food_entries")
+}
+
+model WorkoutType {
+  id              String  @id @default(cuid())
+  name            String
+  category        WorkoutCategory
+  caloriesPerMin  Float   // calories burned per minute
+  description     String?
+  
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workouts Workout[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("workout_types")
+}
+
+model Workout {
+  id            String   @id @default(cuid())
+  date          DateTime
+  duration      Float    // minutes
+  caloriesBurned Float
+  intensity     Intensity @default(MODERATE)
+  notes         String?
+  
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutTypeId String
+  workoutType   WorkoutType  @relation(fields: [workoutTypeId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("workouts")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum ActivityLevel {
+  SEDENTARY
+  LIGHTLY_ACTIVE
+  MODERATELY_ACTIVE
+  VERY_ACTIVE
+  EXTRA_ACTIVE
+}
+
+enum DeficitSpeed {
+  MAINTENANCE
+  SLOW
+  MODERATE
+  FAST
+  VERY_FAST
+}
+
+enum WorkoutCategory {
+  CARDIO
+  STRENGTH
+  FLEXIBILITY
+  SPORTS
+  DAILY_ACTIVITIES
+}
+
+enum Intensity {
+  LOW
+  MODERATE
+  HIGH
+  EXTREME
+} 
