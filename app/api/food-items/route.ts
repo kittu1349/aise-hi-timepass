@@ -6,6 +6,7 @@ export async function GET(req: NextRequest) {
   try {
     const { userId } = getOrCreateUserId()
     const search = req.nextUrl.searchParams.get('q')?.trim() || ''
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const items = await prisma.foodItem.findMany({
       where: {
         userId,
