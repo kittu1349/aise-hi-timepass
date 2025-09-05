@@ -1,7 +1,7 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { Providers } from '@/app/providers'
+import { Providers } from './providers'
 import { Navigation } from '@/components/Navigation'
 import { Toaster } from 'react-hot-toast'
 

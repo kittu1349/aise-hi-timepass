@@ -4,9 +4,8 @@ import { getOrCreateUserId } from '@/lib/user'
 
 export async function GET(req: NextRequest) {
   try {
-    const { userId } = getOrCreateUserId()
+    const { userId } = getOrCreateUserId(true)
     const date = req.nextUrl.searchParams.get('date')
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const where: any = { userId }
     if (date) {
       const start = new Date(date)
@@ -32,9 +31,6 @@ export async function POST(req: NextRequest) {
     if (!date || !workoutTypeId || typeof duration !== 'number') {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
     }
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
     const type = await prisma.workoutType.findFirst({ where: { id: workoutTypeId, userId } })
     if (!type) return NextResponse.json({ error: 'Workout type not found' }, { status: 404 })
 
@@ -51,7 +47,7 @@ export async function POST(req: NextRequest) {
       include: { workoutType: true }
     })
     const res = NextResponse.json(created, { status: 201 })
-    if (setCookie && userId) res.cookies.set('uid', userId, { httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 365 })
+    if (setCookie) res.cookies.set('uid', userId, { httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 365 })
     return res
   } catch (e) {
     return NextResponse.json({ error: 'Failed to create workout' }, { status: 500 })
