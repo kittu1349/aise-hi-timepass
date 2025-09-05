@@ -5,9 +5,9 @@ import { getOrCreateUserId } from '@/lib/user'
 export async function GET(req: NextRequest) {
   try {
     const { userId } = getOrCreateUserId()
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const date = req.nextUrl.searchParams.get('date')
-    const where: any = { userId: userId as string }
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const where: any = { userId }
     if (date) {
       const start = new Date(date)
       const end = new Date(date)
@@ -27,11 +27,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, setCookie } = getOrCreateUserId(false)
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const { userId, setCookie } = getOrCreateUserId()
     const { date, workoutTypeId, duration, caloriesBurned, intensity, notes } = await req.json()
     if (!date || !workoutTypeId || typeof duration !== 'number') {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
+    }
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     const type = await prisma.workoutType.findFirst({ where: { id: workoutTypeId, userId } })
     if (!type) return NextResponse.json({ error: 'Workout type not found' }, { status: 404 })

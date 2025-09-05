@@ -23,18 +23,20 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, setCookie } = getOrCreateUserId(false)
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const { userId, setCookie } = getOrCreateUserId()
     const body = await req.json()
     const { name, category, caloriesPerMin, description } = body
     if (!name || !category || typeof caloriesPerMin !== 'number') {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
     }
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     const created = await prisma.workoutType.create({
       data: { name, category, caloriesPerMin, description, userId },
     })
     const res = NextResponse.json(created, { status: 201 })
-    if (setCookie) res.cookies.set('uid', userId, { httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 365 })
+    if (setCookie && userId) res.cookies.set('uid', userId, { httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 365 })
     return res
   } catch (e) {
     return NextResponse.json({ error: 'Failed to create workout type' }, { status: 500 })
