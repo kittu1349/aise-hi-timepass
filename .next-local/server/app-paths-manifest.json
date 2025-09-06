@@ -1,4 +1,23 @@
 {
-  "/not-found": "app/not-found.js",
-  "/page": "app/page.js"
+  "/_not-found": "app/_not-found.js",
+  "/analytics/page": "app/analytics/page.js",
+  "/auth/register/page": "app/auth/register/page.js",
+  "/auth/login/page": "app/auth/login/page.js",
+  "/calculator/page": "app/calculator/page.js",
+  "/page": "app/page.js",
+  "/nutrition/page": "app/nutrition/page.js",
+  "/profile/page": "app/profile/page.js",
+  "/workouts/page": "app/workouts/page.js",
+  "/food-database/page": "app/food-database/page.js",
+  "/api/food-items/[id]/route": "app/api/food-items/[id]/route.js",
+  "/api/auth/register/route": "app/api/auth/register/route.js",
+  "/api/auth/login/route": "app/api/auth/login/route.js",
+  "/api/food-entries/[id]/route": "app/api/food-entries/[id]/route.js",
+  "/api/profile/route": "app/api/profile/route.js",
+  "/api/workout-types/[id]/route": "app/api/workout-types/[id]/route.js",
+  "/api/food-entries/route": "app/api/food-entries/route.js",
+  "/api/workout-types/route": "app/api/workout-types/route.js",
+  "/api/food-items/route": "app/api/food-items/route.js",
+  "/api/workouts/[id]/route": "app/api/workouts/[id]/route.js",
+  "/api/workouts/route": "app/api/workouts/route.js"
 }

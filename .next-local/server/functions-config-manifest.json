@@ -1,0 +1,1 @@
+{"version":1,"functions":{"/api/auth/login":{},"/api/auth/register":{},"/api/food-entries/[id]":{},"/api/food-entries":{},"/api/food-items/[id]":{},"/api/food-items":{},"/api/profile":{},"/api/workout-types/[id]":{},"/api/workouts/[id]":{},"/api/workout-types":{},"/api/workouts":{}}}

@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { calculateBMR, calculateTDEE, getDeficitCalories } from '@/lib/utils'
 import { getOrCreateUserId } from '@/lib/user'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const { userId } = getOrCreateUserId(false)

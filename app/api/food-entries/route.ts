@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getOrCreateUserId } from '@/lib/user'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest) {
   try { 
-    const { userId } = getOrCreateUserId(true)
+    const { userId } = getOrCreateUserId(false)
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const date = req.nextUrl.searchParams.get('date')
-    const where: any = { userId: userId! }
+    const where: any = { userId: userId as string }
     if (date) {
       const start = new Date(date)
       const end = new Date(date)
@@ -26,17 +29,15 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, setCookie } = getOrCreateUserId()
+    const { userId } = getOrCreateUserId(false)
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { date, foodItemId, quantity } = await req.json()
     if (!date || !foodItemId || typeof quantity !== 'number') {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
     }
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-      const food = await prisma.foodItem.findFirst({
-        where: { id: foodItemId, userId }
-      })
+    const food = await prisma.foodItem.findFirst({
+      where: { id: foodItemId, userId: userId as string }
+    })
       if (!food) return NextResponse.json({ error: 'Food not found' }, { status: 404 })
       const totalCalories = (food.caloriesPer100g * quantity) / 100
       const created = await prisma.foodEntry.create({
@@ -44,14 +45,12 @@ export async function POST(req: NextRequest) {
           date: new Date(date),
           quantity,
           totalCalories,
-          userId,
+          userId: userId as string,
           foodItemId,
         },
         include: { foodItem: true }
       })
-      const res = NextResponse.json(created, { status: 201 })
-      if (setCookie) res.cookies.set('uid', userId, { httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 365 })
-      return res
+      return NextResponse.json(created, { status: 201 })
     } catch (e) {
       return NextResponse.json({ error: 'Failed to create entry' }, { status: 500 })
     }
